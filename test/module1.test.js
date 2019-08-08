@@ -30,7 +30,11 @@ describe('Module 01 - Calculate Average Rating', () => {
 
     const properties = {};
     ratings.properties.forEach(property => {
-      properties[property.key.name] =  property.value.value;
+      if (property.key.name) {
+        properties[property.key.name] =  property.value.value;
+      } else if (property.key.value) {
+        properties[property.key.value] =  property.value.value;
+      }
     });
 
     const matched = JSON.stringify(properties) === JSON.stringify({ count: 0, sum: 0, average: 0 })
