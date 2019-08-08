@@ -1,85 +1,65 @@
-# Setup
+## Add a Script Element
 
-## Installation
+In this module we will create a script that calculates the average rating for values 1 to 5.
 
-Run the following command from the root folder of the cloned project to install all dependencies.
+Open the file called `index.html` in the root of the project.
 
-`npm install`
+Add a `<script>` element to the bottom of the `<body>` element that has a source of `js/ratings.js`.
 
-## Verify Setup
+## Collect Ratings Function
 
-In order to verify that everything is setup correctly, run the following command, which should show you the failing tests. This is good! We'll be fixing these tests once we jump into the build step.
+Open the main file for the project `js/ratings.js`.
 
-`npm run test`
+At the top of this file, create a function called `collect_ratings()`. This function does not accept any arguments.
 
-Every time you want to check your work locally you can type that command, and it will report the status of every task in that module.
+## Create a Ratings Object
 
-As you move through the modules, you can run module-specific tests with the script `npm run test:module1`, replacing the number with one that corresponds with the module you are working in.
+In the body of the `collect_ratings()` function, create an object named `ratings`. The object should have three keys `count`, `sum`, and `average` all set to `0`.
 
-You can also run a visual test using the command `npm run visual:module1`, replacing the number with one that corresponds with the module you are working in.
+## Create a Let Binding
 
-## Previewing Your Work
+Still in the body of the `collect_ratings()` function, create a variable with the let keyword called `rating`. Give it the initial value of `0`.
 
-In order to see your changes in a browser, you can run `npm start` from the command line. This will open a browser and you should see your landing page.
+## Select HTML Elements
 
-# Module 01 - Main game loop
+To calculate the average rating, we need the values of all input elements in the HTML that have a class of `rating`. Use the `querySelectorAll()` method of `document` to select all elements that have a class of `rating`. The `querySelectorAll()` method creates an array that should be stored in a constant called `elements`.
 
-## 1.1 - Reference an external script
+## Use the forEach Function
 
-@external-script Open `index.html` and add a `script` tag that references the CreateJS on the CreateJS CDN. Also add a `script` tag for the `app.js` file.
+Cycle through the `elements` array with a `forEach` loop. Pass an anonymous or arrow function to the `forEach` loop. The function should accept a single argument called `element`.
 
-## 1.2 - Listen for DOMContentLoaded
+## Set a rating
 
-@listen-domcontentloaded Open `app.js` and add an event lister to the `document`. Listen for the `DOMContentLoaded` event. The event handler should be an anonymous function.
+In the `forEach` loop function, call the `replace()` function on the `element.id`. To `replace()`, pass the correct arguments that replace the word `star` with nothing. Pass this statement to `parseInt()` to convert the remaining string to a number. All of this should be assigned to the existing `rating` variable.
 
-## 1.3 - Key code constants
+## Set an Object Value - count
 
-@keycode-constants At the top of the event handler anonymous function. Declare 4 constants called `KEYCODE_LEFT`, `KEYCODE_UP`, `KEYCODE_RIGHT`, and `KEYCODE_DOWN`. Assign them the values 37, 38, 39 and 40 respectively.
+Still in the `forEach` loop function, pass `element.value` to the `parseInt()` function and use the addition assignment operator to assign the result to the `count` property of the `ratings` object.
 
-## 1.5 - Create a stage
+## Set an Object Value - sum
 
-@create-stage Below the key code constants assign a constant called `stage` a `new createjs Stage`. Make sure that you have the proper ID.
+Still in the `forEach` loop function, pass `element.value` to the `parseInt()` function and multiple it by `rating`. Use the addition assignment operator to assign the result to the `sum` property of the `ratings` object.
 
-## 1.6 - Create a shape
+## Prevent Divide by Zero
 
-@shio-shape Below the `stage` constant, assign a  Assign a constant called `ship` a `new createjs Shape`.
+Below the `forEach` loop, create an `if` statement that tests whether the `count` property of the `ratings` object is not equal to `0`.
 
-## 1.7 - Draw the ship shape
+## Calculate Average Rating
 
-@draw-ship On the `graphics` layer of the `ship` shape draw a white ship with the following points (0, 0); (30, 15); (0, 30); (7.5, 15); (0, 0);
+In the `if` statement, set the `average` property of the ratings property to `sum` divided by `count`.
 
-## 1.8 - Add a shape to the stage
+## Return Ratings
 
-@ship-addchild Add the `ship` Shape to the `stage`.
+Return the `ratings` object from the `collect_ratings()` function.
 
-## 1.9 - Ticker event listener
+## Change Event - Handler
 
-@ticker-event-listener Using the `createjs.Ticker` object and the on method, register a handler for the "tick" event. The handler function should be and anonymous function that updates the `stage`.
+Below the `collect_ratings()` function, add an event listener that listens for the `change` event on `document`. When creating the event listener, pass an arrow function as the handler.
 
-## 1.10 - Ticker FPS
+## Call Collect Ratings Function
 
-@Ticker-fps Use `createjs.Ticker` object and `setFPS()` to set the frame per second to 30.
+In the change event listener handler, call the `collect_ratings()` function and store the result in a constant called ratings.
 
-## 1.11 - Keyboard listener
+## Set value of Input Element
 
-@keyboard-listener Listen for when a user presses a key down. The handler should be called be and anonymous function with an `event` argument.
-
-## 1.12 - Switch statement
-
-@switch-statement Create a new switch statement and test the event.keyCode
-
-## 1.13 - Left key
-
-@left-key Create a case for KEYCODE_LEFT that moves the ship left at the rate 15 pixels. Break out of this case.
-
-## 1.14 - Up key
-
-@up-key Create a case for KEYCODE_UP that moves the ship up at the rate 15 pixels. Break out of this case.
-
-## 1.15 - Right key
-
-@up-key Create a case for KEYCODE_RIGHT that moves the ship right at the rate 15 pixels. Break out of this case.
-
-## 1.16 - Down key
-
-@down-key Create a case for KEYCODE_DOWN that moves the ship right at the rate 15 pixels. Break out of this case.
+Still in the `change` event listener handler, use the `querySelector()` method to select the element that has an `id` of `average`. Set the `value` property of this element to `ratings.average`. Fix `ratings.average` to two decimal places.
