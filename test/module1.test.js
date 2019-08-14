@@ -2,7 +2,7 @@ describe('Module 01 - Calculate Average Rating', () => {
 
   const collect_ratings = ast.returnParent('collect_ratings');
   const event_listener = ast.findCall('addEventListener');
-  const if_statement = jscs(collect_ratings.findIf())
+  const if_statement = (collect_ratings.length) ? jscs(collect_ratings.findIf()) : false;
 
   const for_each = ast.findCall('forEach');
   const elements_foreach = {
