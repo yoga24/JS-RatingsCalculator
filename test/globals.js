@@ -91,6 +91,22 @@ const $ = cheerio.load(source_html);
 const matchObj = (obj, match_obj) => ((obj.length) ? jscs.match(obj.get().value, dot.object(match_obj)) : false);
 const match = (obj, match_obj) => jscs.match(obj, dot.object(match_obj));
 
+const checkNested = (obj, level, ...rest) => {
+  if (obj === undefined) return false
+  if (rest.length == 0 && obj.hasOwnProperty(level)) return true
+  return checkNested(obj[level], ...rest)
+};
+
+const findParam = (obj) => {
+  if (obj.length) {
+    const obj_value = obj.get().value;
+    return (checkNested(obj_value, 'arguments') && obj_value.arguments.length == 1 && obj_value.arguments[0].params.length) ? obj_value.arguments[0].params[0].name : false;
+  } else {
+    return false;
+  }
+};
+
+
 Object.assign(global, {
   $,
   assert,
@@ -98,5 +114,6 @@ Object.assign(global, {
   dot,
   jscs,
   match,
-  matchObj
+  matchObj,
+  findParam
 });

@@ -5,14 +5,17 @@ describe('Module 01 - Calculate Average Rating', () => {
   const if_statement = (collect_ratings.length) ? jscs(collect_ratings.findIf()) : false;
 
   const for_each = ast.findCall('forEach');
-  const elements_foreach = {
+  const elements_foreach_arrow = {
     'type': 'CallExpression',
     'callee.type': 'MemberExpression',
     'callee.object.name': 'elements',
     'callee.property.name': 'forEach',
     'arguments.0.type': 'ArrowFunctionExpression',
   };
-  const for_each_matched = matchObj(for_each, elements_foreach);
+  const elements_foreach_function =  Object.assign({}, elements_foreach_arrow, { 'arguments.0.type': 'FunctionExpression' })
+  const for_each_matched = matchObj(for_each, elements_foreach_arrow) || matchObj(for_each, elements_foreach_function);
+
+  const forEachParam = (for_each.length) ? findParam(for_each) : false;
 
   it('Should add a `<script>` element. @script-element', () => {
     const element = $('body').children().is('script[src="js/ratings.js"]');
@@ -70,10 +73,10 @@ describe('Module 01 - Calculate Average Rating', () => {
 
     assert(rating_for_each.length, 'Are you setting the `ratings` variable?');
     assert(rating_for_each_right.callee.name === 'parseInt', 'Are you using `parseInt()` to convert the `element.id` to a number?');
-    assert(rating_for_each_right.arguments.length === 1, 'Are you passing `parseInt()` the correct number of parameters?');
+    assert(rating_for_each_right.arguments.length >= 1, 'Are you passing `parseInt()` the correct number of parameters?');
 
     const replace_call_match = {
-      'callee.object.object.name': 'element',
+      'callee.object.object.name': forEachParam,
       'callee.object.property.name': 'id',
       'callee.property.name': 'replace',
       'arguments.0.value': 'star',
@@ -91,7 +94,7 @@ describe('Module 01 - Calculate Average Rating', () => {
       'left.object.name': 'ratings',
       'left.property.name': 'count',
       'right.callee.name': 'parseInt',
-      'right.arguments.0.object.name': 'element',
+      'right.arguments.0.object.name': forEachParam,
       'right.arguments.0.property.name': 'value'
     };
     assert(matchObj(ratings_count, ratings_count_match),'Are you adding `element.value` to `ratings.count`?');
@@ -105,7 +108,7 @@ describe('Module 01 - Calculate Average Rating', () => {
 
     const ratings_sum_match = {
       'callee.name': 'parseInt',
-      'arguments.0.object.name': 'element',
+      'arguments.0.object.name': forEachParam,
       'arguments.0.property.name': 'value'
     };
     assert(ratings_sum.findIdentifierParent('rating').type === 'BinaryExpression' &&
