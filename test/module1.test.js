@@ -89,32 +89,75 @@ describe('Module 01 - Calculate Average Rating', () => {
     assert(for_each_matched, 'Does the `forEach` loop exist?');
     const ratings_count = for_each.findPropertyAssignment('ratings', 'count');
     assert(ratings_count.length, 'In the `forEach` loop are you setting `ratings.count`?');
-    const ratings_count_match = {
+
+    const ratings_count_ap_match = {
       'operator': '+=',
-      'left.object.name': 'ratings',
-      'left.property.name': 'count',
       'right.callee.name': 'parseInt',
       'right.arguments.0.object.name': forEachParam,
       'right.arguments.0.property.name': 'value'
     };
-    assert(matchObj(ratings_count, ratings_count_match),'Are you adding `element.value` to `ratings.count`?');
+    const ratings_count_left_match = {
+      'operator': '=',
+      'right.left.object.name': 'ratings',
+      'right.left.property.name': 'count',
+      'right.operator': '+',
+      'right.right.callee.name': 'parseInt',
+      'right.right.arguments.0.object.name': forEachParam,
+      'right.right.arguments.0.property.name': 'value'
+    };
+    const ratings_count_right_match = {
+      'operator': '=',
+      'right.right.object.name': 'ratings',
+      'right.right.property.name': 'count',
+      'right.operator': '+',
+      'right.left.callee.name': 'parseInt',
+      'right.left.arguments.0.object.name': forEachParam,
+      'right.left.arguments.0.property.name': 'value'
+    };
+
+    assert(matchObj(ratings_count, ratings_count_ap_match) ||
+           matchObj(ratings_count, ratings_count_left_match) ||
+           matchObj(ratings_count, ratings_count_right_match),'Are you adding the converted `element.value` to `ratings.count`?');
   });
 
   it('Should set `ratings.sum`. @ratings-sum', () => {
     assert(for_each_matched, 'Does the `forEach` loop exist?');
     const ratings_sum = for_each.findPropertyAssignment('ratings', 'sum');
     assert(ratings_sum.length, 'In the `forEach` loop are you setting `ratings.sum`?');
-    assert(ratings_sum.get().value.operator === '+=', 'Are you adding to the current value of `ratings.sum`?');
 
-    const ratings_sum_match = {
-      'callee.name': 'parseInt',
-      'arguments.0.object.name': forEachParam,
-      'arguments.0.property.name': 'value'
+    const ratings_sum_left_match = {
+      'operator': '=',
+      'right.left.object.name': 'ratings',
+      'right.left.property.name': 'sum',
+      'right.operator': '+'
     };
-    assert(ratings_sum.findIdentifierParent('rating').type === 'BinaryExpression' &&
-           ratings_sum.findIdentifierParent('rating').operator === '*' &&
-           matchObj(ratings_sum.findCall('parseInt'), ratings_sum_match), 'Are you multiplying `rating` by the numeric value(`parseInt`) of `element.value`?');
-    });
+    const ratings_sum_right_match = {
+      'operator': '=',
+      'right.right.object.name': 'ratings',
+      'right.right.property.name': 'sum',
+      'right.operator': '+'
+    };
+    assert(matchObj(ratings_sum, { 'operator': '+=' }) ||
+           matchObj(ratings_sum, ratings_sum_left_match) ||
+           matchObj(ratings_sum, ratings_sum_right_match), 'Are you adding to the current value of `ratings.sum` to itself?');
+
+    const sides = ratings_sum.findSides('*');
+    const multiple_left_match = {
+      'left.name': 'rating',
+      'right.callee.name': 'parseInt',
+      'right.arguments.0.object.name': forEachParam,
+      'right.arguments.0.property.name': 'value'
+    };
+    const multiple_right_match = {
+      'right.name': 'rating',
+      'left.callee.name': 'parseInt',
+      'left.arguments.0.object.name': forEachParam,
+      'left.arguments.0.property.name': 'value'
+    };
+
+    assert(match(sides, multiple_left_match) ||
+           match(sides, multiple_right_match), 'Are you calling `parseInt()` on `element.value` and multiplying it by `rating`?');
+  });
 
   it('Should check if `ratings.count` is zero. @ratings-count-zero', () => {
     assert(collect_ratings.length, 'Do you have a function called `collect_ratings()`?');
